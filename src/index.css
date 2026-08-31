@@ -64,8 +64,8 @@
 }
 
 .site-shell { overflow-x: clip; }
-.section-pad { padding: clamp(4.25rem, 8vw, 9rem) max(1.25rem, calc((100vw - 1180px) / 2)); }
-.eyebrow { color: hsl(var(--accent)); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
+.section-pad { padding: clamp(3.5rem, 7vw, 7.5rem) max(1.25rem, calc((100vw - 1180px) / 2)); }
+.eyebrow { color: hsl(var(--accent)); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
 .display { letter-spacing: -.055em; line-height: .98; }
 .fine-rule { height: 1px; background: hsl(var(--border)); }
 .text-balance { text-wrap: balance; }
@@ -99,6 +99,25 @@
 @keyframes reveal { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+/* Scrollbar styles for horizontal scrolling sections */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--accent) / .3) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--accent) / .3);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--accent) / .5);
 }
 
 /* Light textile theme guardrails: keep legacy component tokens from reintroducing dark surfaces. */
@@ -164,63 +183,116 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
 
 @media (max-width: 767px) {
   .section-pad {
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
   }
 
-  #home > .thread-svg,
-  #home [data-testid="button-scroll-values"] {
+  #home > .thread-svg {
     display: none;
   }
 
   #home > div.relative {
-    gap: 2.25rem;
-    padding-top: 7.25rem;
+    gap: 2rem;
+    padding-top: 6.5rem;
+    padding-bottom: 3rem;
+    min-height: 520px;
   }
 
   #home h1 {
     max-width: 100%;
-    font-size: clamp(2.6rem, 12vw, 3.7rem);
-    line-height: .99;
+    font-size: clamp(2.4rem, 11vw, 3.5rem);
+    line-height: 1.02;
   }
 
   #home p {
-    line-height: 1.8;
+    margin-top: 1.25rem;
+    line-height: 1.7;
   }
 
-  #home [data-testid="button-hero-solutions"],
-  #home [data-testid="button-hero-contact"] {
-    min-height: 3.25rem;
+  #home [data-testid="button-hero-contact"],
+  #home [data-testid="button-hero-offerings"] {
     width: 100%;
   }
 
   #home > div.relative > div:last-child {
-    width: min(100%, 430px);
+    width: min(100%, 400px);
+    margin-top: 0;
   }
 
   #home > div.relative > div:last-child > div:first-child {
-    aspect-ratio: .92;
+    aspect-ratio: .90;
   }
 
-  #solutions article {
-    min-height: 220px;
+  #challenges .grid {
+    grid-template-columns: 1fr;
   }
 
-  #flow .relative.mt-16 {
-    margin-top: 3rem;
+  #solutions .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #offerings .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #g2m .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #revenue .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #market-size .grid,
+  #fund-utilization .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #competitive .grid {
+    grid-template-columns: 1fr;
+  }
+
+  #leadership .grid {
+    gap: 2rem;
+  }
+
+  #contact .grid:first-child {
+    grid-template-columns: 1fr;
+  }
+
+  footer .grid:first-child {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
   footer {
-    padding-top: 3.5rem;
+    padding-top: 3rem;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
+  .section-pad {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
   #home h1 {
-    font-size: clamp(2.55rem, 5.8vw, 4.8rem);
+    font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+  }
+
+  #home > div.relative {
+    min-height: 600px;
   }
 
   #home > div.relative > div:last-child > div:first-child {
     aspect-ratio: .86;
+  }
+
+  #challenges .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #g2m .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
