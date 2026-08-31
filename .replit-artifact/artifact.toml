@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Freya Poly Fab"
+description = "A premium responsive B2B textile website for Freya Poly Fab, presenting quality fabrics, reliable sourcing, customer-focused solutions, and a clear business enquiry path."
+version = "1.0.0"
+id = "artifacts/freya-poly-fab"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25503
+
+[services.development]
+run = "pnpm --filter @workspace/freya-poly-fab run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/freya-poly-fab", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/freya-poly-fab/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25503"
+BASE_PATH = "/"
