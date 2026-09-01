@@ -130,9 +130,6 @@ function ContactForm() {
   return <form onSubmit={submit} noValidate className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 sm:p-6 lg:p-8" data-testid="form-enquiry"><div className="grid gap-4 sm:grid-cols-2"><Field label="Full name" id="fullName" value={form.fullName} onChange={update('fullName')} error={errors.fullName} required placeholder="Your full name" /><Field label="Company name" id="company" value={form.company} onChange={update('company')} error={errors.company} required placeholder="Your company name" /><Field label="Email address" id="email" value={form.email} onChange={update('email')} error={errors.email} required type="email" placeholder="you@company.com" /><Field label="Phone number" id="phone" value={form.phone} onChange={update('phone')} error={errors.phone} required type="tel" placeholder="+91" /><SelectField label="Business type" id="businessType" value={form.businessType} onChange={update('businessType')} error={errors.businessType} options={businessTypes} /><SelectField label="Fabric Requirement" id="requirement" value={form.requirement} onChange={update('requirement')} error={errors.requirement} options={requirements} /></div><div className="mt-4"><label htmlFor="message" className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--foreground))]">Fabric Requirement / Message<span className="ml-1 text-[hsl(var(--accent))]" aria-hidden="true">*</span></label><textarea id="message" name="message" rows={4} value={form.message} onChange={(event) => update('message')(event.target.value)} placeholder="Tell us about your fabric requirement…" aria-invalid={Boolean(errors.message)} className={`w-full resize-y border bg-[hsl(var(--card))] px-4 py-3 text-base text-[hsl(var(--foreground))] outline-none transition placeholder:text-[hsl(var(--muted-foreground)/.65)] focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.32)] ${errors.message ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'}`} data-testid="input-message" />{errors.message && <p className="mt-1.5 text-xs text-[hsl(var(--destructive))]" role="alert">{errors.message}</p>}</div><div className="mt-5 flex flex-col items-start justify-between gap-4 border-t border-[hsl(var(--border))] pt-5 sm:flex-row sm:items-center"><p className="max-w-[330px] text-xs leading-5 text-[hsl(var(--muted-foreground))]">Your details will be securely saved to our database.</p><button type="submit" disabled={status === 'loading'} className="inline-flex w-full items-center justify-center gap-3 bg-[hsl(var(--primary))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--primary-foreground))] transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 sm:w-auto" data-testid="button-submit-enquiry">{status === 'loading' ? 'Submitting…' : <>Send Enquiry <ArrowRight size={16} /></>}</button></div>{status === 'error' && Object.keys(errors).length === 0 && <p className="mt-4 text-xs text-[hsl(var(--destructive))]" role="alert">Something went wrong. Please review your details and try again.</p>}</form>;
 }
 
-function Logo({ compact = false }: { compact?: boolean }) {
-  return <img src={logoPath} alt="Freya Poly Fab official logo" className={compact ? 'h-10 w-auto object-contain' : 'h-12 w-auto object-contain'} />;
-}
 
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const reduce = useReducedMotion();
@@ -153,27 +150,28 @@ export function ContactPageContent() {
   const reduce = useReducedMotion();
   
   return (
-    <div className="min-h-screen bg-[hsl(var(--background))] pt-[72px] xl:pt-[76px]">
-      {/* Hero Section */}
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--card))] to-[hsl(var(--background))] pb-8 pt-8 sm:pb-12 sm:pt-10">
-        <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 80% 24%, rgba(229,212,184,.32), transparent 38%)' }} />
-        <div className="relative z-10 mx-auto max-w-[1180px] px-4 sm:px-8 lg:px-10">
+    <div id="contact-page" className="min-h-screen bg-[hsl(var(--background))] pt-[68px] xl:pt-[72px]">
+      {/* Hero */}
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--card))] to-[hsl(var(--background))] px-[var(--gutter)] pb-10 pt-10 sm:pb-14 sm:pt-12">
+        <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 80% 24%, rgba(229,212,184,.32), transparent 38%)' }} />
+        <div className="relative z-10 mx-auto max-w-[var(--max-w)]">
           <Reveal>
-            <h1 className="display max-w-[700px] text-[clamp(1.9rem,6vw,5rem)] font-semibold leading-[1.05] text-[hsl(var(--foreground))]">
+            <h1 className="display max-w-[640px] font-semibold text-[hsl(var(--foreground))]"
+              style={{ fontSize: 'clamp(1.85rem, 5.5vw, 4.6rem)', lineHeight: 1.05 }}>
               Partner With Us for<br />
               <span className="text-[hsl(var(--accent))]">Quality Fabrics</span>
             </h1>
-            <p className="mt-4 max-w-[550px] text-[14px] leading-[1.7] text-[hsl(var(--muted-foreground))] sm:text-base sm:leading-[1.75]">
+            <p className="mt-4 max-w-[520px] text-sm leading-[1.72] text-[hsl(var(--muted-foreground))] sm:text-base sm:leading-[1.75]">
               Have a fabric requirement or business enquiry? Send us your details and our team will get in touch to discuss your textile needs.
             </p>
           </Reveal>
         </div>
       </section>
 
-      {/* Contact Form and Details Section */}
-      <section className="py-8 sm:py-12 lg:py-16">
-        <div className="mx-auto max-w-[1180px] px-4 sm:px-8 lg:px-10">
-          <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr] lg:gap-16">
+      {/* Form + Info */}
+      <section className="px-[var(--gutter)] py-10 sm:py-14 lg:py-16">
+        <div className="mx-auto max-w-[var(--max-w)]">
+          <div className="contact-grid grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-14">
             <Reveal>
               <div>
                 <div className="eyebrow mb-3">Contact Information</div>
@@ -196,7 +194,7 @@ export function ContactPageContent() {
           </div>
 
           {/* Contact Cards */}
-          <div className="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="contact-cards mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
             {[
               { icon: <Phone size={22} />, title: 'Call Us', text: '+91 9879296213', href: 'tel:+919879296213', testId: 'link-call', color: '#0f3d5c' },
               { icon: <Mail size={22} />, title: 'Email Us', text: 'devr8155@gmail.com', href: 'mailto:devr8155@gmail.com', testId: 'link-email', color: '#4a7ba7' },
