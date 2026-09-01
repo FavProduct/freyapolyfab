@@ -16,7 +16,25 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 const initialForm: FormState = { fullName: '', company: '', email: '', phone: '', businessType: '', requirement: '', message: '' };
 
 function Field({ label, id, value, onChange, error, required = false, placeholder = '', type = 'text' }: { label: string; id: keyof FormState; value: string; onChange: (value: string) => void; error?: string; required?: boolean; placeholder?: string; type?: string }) {
-  return <div><label htmlFor={id} className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--foreground))]">{label}{required && <span className="ml-1 text-[hsl(var(--accent))]" aria-hidden="true">*</span>}</label><input type={type} id={id} name={id} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} aria-invalid={Boolean(error)} className={`w-full border bg-[hsl(var(--card))] px-4 py-3.5 text-base text-[hsl(var(--foreground))] outline-none transition placeholder:text-[hsl(var(--muted-foreground)/.65)] focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.32)] ${error ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'}`} data-testid={`input-${id}`} />{error && <p className="mt-1.5 text-xs text-[hsl(var(--destructive))]" role="alert">{error}</p>}</div>;
+  return (
+    <div>
+      <label htmlFor={id} className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--foreground))]">
+        {label}{required && <span className="ml-1 text-[hsl(var(--accent))]" aria-hidden="true">*</span>}
+      </label>
+      <input
+        type={type}
+        id={id}
+        name={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        aria-invalid={Boolean(error)}
+        className={`w-full min-h-[46px] border bg-[hsl(var(--card))] px-4 py-3 text-sm text-[hsl(var(--foreground))] outline-none transition placeholder:text-[hsl(var(--muted-foreground)/.6)] focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.3)] ${error ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'}`}
+        data-testid={`input-${id}`}
+      />
+      {error && <p className="mt-1.5 text-xs text-[hsl(var(--destructive))]" role="alert">{error}</p>}
+    </div>
+  );
 }
 
 function SelectField({ label, id, value, onChange, error, options }: { label: string; id: keyof FormState; value: string; onChange: (value: string) => void; error?: string; options: string[] }) {
@@ -43,11 +61,11 @@ function SelectField({ label, id, value, onChange, error, options }: { label: st
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`flex w-full items-center justify-between border bg-[hsl(var(--card))] px-4 py-3.5 text-left text-base outline-none transition focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.32)] ${error ? 'border-[hsl(var(--destructive))]' : open ? 'border-[hsl(var(--accent))]' : 'border-[hsl(var(--border))]'}`}
+        className={`flex w-full min-h-[46px] items-center justify-between border bg-[hsl(var(--card))] px-4 py-3 text-left text-sm outline-none transition focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.3)] ${error ? 'border-[hsl(var(--destructive))]' : open ? 'border-[hsl(var(--accent))]' : 'border-[hsl(var(--border))]'}`}
         data-testid={`select-${id}`}
       >
-        <span className={selected ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground)/.65)]'}>
-          {selected || 'Select one'}
+        <span className={selected ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground)/.6)]'}>
+          {selected || 'Select option'}
         </span>
         <ChevronDown
           size={16}
@@ -63,7 +81,7 @@ function SelectField({ label, id, value, onChange, error, options }: { label: st
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-y-auto border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-lg"
+            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-56 overflow-y-auto border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-lg rounded-sm"
           >
             {options.map((option) => (
               <li
@@ -71,7 +89,7 @@ function SelectField({ label, id, value, onChange, error, options }: { label: st
                 role="option"
                 aria-selected={selected === option}
                 onClick={() => { onChange(option); setOpen(false); }}
-                className={`flex cursor-pointer items-center justify-between px-4 py-3 text-sm transition-colors hover:bg-[hsl(var(--accent)/.08)] hover:text-[hsl(var(--accent))] ${selected === option ? 'bg-[hsl(var(--accent)/.12)] font-semibold text-[hsl(var(--accent))]' : 'text-[hsl(var(--foreground))]'}`}
+                className={`flex cursor-pointer items-center justify-between px-4 py-3 text-xs sm:text-sm transition-colors hover:bg-[hsl(var(--accent)/.08)] hover:text-[hsl(var(--accent))] ${selected === option ? 'bg-[hsl(var(--accent)/.12)] font-semibold text-[hsl(var(--accent))]' : 'text-[hsl(var(--foreground))]'}`}
               >
                 {option}
                 {selected === option && <Check size={14} className="shrink-0 text-[hsl(var(--accent))]" />}
@@ -126,20 +144,54 @@ function ContactForm() {
       setStatus('success');
     }
   };
-  if (status === 'success') return <div className="border border-[hsl(var(--accent)/.5)] bg-[hsl(var(--card))] p-8 sm:p-12" role="status" data-testid="status-enquiry-success"><div className="flex h-12 w-12 items-center justify-center rounded-full bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]"><Check size={22} /></div><h3 className="mt-7 text-2xl font-semibold text-[hsl(var(--primary))]">Thank you for contacting Freya Poly Fab.</h3><p className="mt-4 max-w-[480px] text-sm leading-7 text-[hsl(var(--muted-foreground))]">We will get in touch with you regarding your fabric requirement enquiry.</p><p className="mt-7 border-t border-[hsl(var(--border))] pt-5 text-xs leading-6 text-[hsl(var(--muted-foreground))]">Your enquiry has been saved. Our team will review it and get back to you within 24 business hours.</p><button type="button" onClick={() => { setForm(initialForm); setStatus('idle'); }} className="mt-7 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--primary))] underline decoration-[hsl(var(--accent))] underline-offset-4" data-testid="button-new-enquiry">Send another enquiry</button></div>;
-  return <form onSubmit={submit} noValidate className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 sm:p-6 lg:p-8" data-testid="form-enquiry"><div className="grid gap-4 sm:grid-cols-2"><Field label="Full name" id="fullName" value={form.fullName} onChange={update('fullName')} error={errors.fullName} required placeholder="Your full name" /><Field label="Company name" id="company" value={form.company} onChange={update('company')} error={errors.company} required placeholder="Your company name" /><Field label="Email address" id="email" value={form.email} onChange={update('email')} error={errors.email} required type="email" placeholder="you@company.com" /><Field label="Phone number" id="phone" value={form.phone} onChange={update('phone')} error={errors.phone} required type="tel" placeholder="+91" /><SelectField label="Business type" id="businessType" value={form.businessType} onChange={update('businessType')} error={errors.businessType} options={businessTypes} /><SelectField label="Fabric Requirement" id="requirement" value={form.requirement} onChange={update('requirement')} error={errors.requirement} options={requirements} /></div><div className="mt-4"><label htmlFor="message" className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--foreground))]">Fabric Requirement / Message<span className="ml-1 text-[hsl(var(--accent))]" aria-hidden="true">*</span></label><textarea id="message" name="message" rows={4} value={form.message} onChange={(event) => update('message')(event.target.value)} placeholder="Tell us about your fabric requirement…" aria-invalid={Boolean(errors.message)} className={`w-full resize-y border bg-[hsl(var(--card))] px-4 py-3 text-base text-[hsl(var(--foreground))] outline-none transition placeholder:text-[hsl(var(--muted-foreground)/.65)] focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.32)] ${errors.message ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'}`} data-testid="input-message" />{errors.message && <p className="mt-1.5 text-xs text-[hsl(var(--destructive))]" role="alert">{errors.message}</p>}</div><div className="mt-5 flex flex-col items-start justify-between gap-4 border-t border-[hsl(var(--border))] pt-5 sm:flex-row sm:items-center"><p className="max-w-[330px] text-xs leading-5 text-[hsl(var(--muted-foreground))]">Your details will be securely saved to our database.</p><button type="submit" disabled={status === 'loading'} className="inline-flex w-full items-center justify-center gap-3 bg-[hsl(var(--primary))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--primary-foreground))] transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 sm:w-auto" data-testid="button-submit-enquiry">{status === 'loading' ? 'Submitting…' : <>Send Enquiry <ArrowRight size={16} /></>}</button></div>{status === 'error' && Object.keys(errors).length === 0 && <p className="mt-4 text-xs text-[hsl(var(--destructive))]" role="alert">Something went wrong. Please review your details and try again.</p>}</form>;
+  if (status === 'success') return (
+    <div className="border border-[hsl(var(--accent)/.5)] bg-[hsl(var(--card))] p-6 sm:p-10 shadow-sm" role="status" data-testid="status-enquiry-success">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[hsl(var(--accent))] text-white">
+        <Check size={22} />
+      </div>
+      <h3 className="mt-6 text-xl font-semibold text-[hsl(var(--primary))] sm:text-2xl">Thank you for contacting Freya Poly Fab.</h3>
+      <p className="mt-3 max-w-[480px] text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">We will get in touch with you regarding your fabric requirement enquiry.</p>
+      <p className="mt-6 border-t border-[hsl(var(--border))] pt-4 text-xs leading-6 text-[hsl(var(--muted-foreground))]">Your enquiry has been securely saved. Our team will review it and get back to you within 24 business hours.</p>
+      <button type="button" onClick={() => { setForm(initialForm); setStatus('idle'); }} className="mt-6 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--primary))] underline decoration-[hsl(var(--accent))] underline-offset-4" data-testid="button-new-enquiry">Send another enquiry</button>
+    </div>
+  );
+  return (
+    <form onSubmit={submit} noValidate className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm sm:p-7 lg:p-8" data-testid="form-enquiry">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Full name" id="fullName" value={form.fullName} onChange={update('fullName')} error={errors.fullName} required placeholder="Your full name" />
+        <Field label="Company name" id="company" value={form.company} onChange={update('company')} error={errors.company} required placeholder="Your company name" />
+        <Field label="Email address" id="email" value={form.email} onChange={update('email')} error={errors.email} required type="email" placeholder="you@company.com" />
+        <Field label="Phone number" id="phone" value={form.phone} onChange={update('phone')} error={errors.phone} required type="tel" placeholder="+91" />
+        <SelectField label="Business type" id="businessType" value={form.businessType} onChange={update('businessType')} error={errors.businessType} options={businessTypes} />
+        <SelectField label="Fabric Requirement" id="requirement" value={form.requirement} onChange={update('requirement')} error={errors.requirement} options={requirements} />
+      </div>
+      <div className="mt-4">
+        <label htmlFor="message" className="mb-2 block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--foreground))]">
+          Fabric Requirement / Message<span className="ml-1 text-[hsl(var(--accent))]" aria-hidden="true">*</span>
+        </label>
+        <textarea id="message" name="message" rows={4} value={form.message} onChange={(event) => update('message')(event.target.value)} placeholder="Tell us about your fabric requirements, quantities, specifications…" aria-invalid={Boolean(errors.message)} className={`w-full resize-y border bg-[hsl(var(--card))] px-4 py-3 text-sm text-[hsl(var(--foreground))] outline-none transition placeholder:text-[hsl(var(--muted-foreground)/.6)] focus:border-[hsl(var(--accent))] focus:ring-1 focus:ring-[hsl(var(--accent)/.3)] ${errors.message ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'}`} data-testid="input-message" />
+        {errors.message && <p className="mt-1.5 text-xs text-[hsl(var(--destructive))]" role="alert">{errors.message}</p>}
+      </div>
+      <div className="mt-6 flex flex-col items-start justify-between gap-4 border-t border-[hsl(var(--border))] pt-5 sm:flex-row sm:items-center">
+        <p className="max-w-[320px] text-xs leading-5 text-[hsl(var(--muted-foreground))]">Your inquiry details will be securely processed by our team.</p>
+        <button type="submit" disabled={status === 'loading'} className="inline-flex min-h-[46px] w-full items-center justify-center gap-2.5 bg-[hsl(var(--accent))] px-6 py-3 text-xs font-semibold uppercase tracking-[.14em] text-white shadow-sm transition hover:bg-[hsl(var(--accent)/.9)] disabled:cursor-wait disabled:opacity-70 sm:w-auto" data-testid="button-submit-enquiry">
+          {status === 'loading' ? 'Submitting…' : <>Send Enquiry <ArrowRight size={15} /></>}
+        </button>
+      </div>
+      {status === 'error' && Object.keys(errors).length === 0 && <p className="mt-4 text-xs text-[hsl(var(--destructive))]" role="alert">Something went wrong. Please review your details and try again.</p>}
+    </form>
+  );
 }
-
 
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
       className={className}
-      initial={reduce ? undefined : { opacity: 0, y: 22 }}
+      initial={reduce ? undefined : { opacity: 0, y: 18 }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.16 }}
-      transition={{ duration: 0.72, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -152,37 +204,37 @@ export function ContactPageContent() {
   return (
     <div id="contact-page" className="min-h-screen bg-[hsl(var(--background))] pt-[68px] xl:pt-[72px]">
       {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--card))] to-[hsl(var(--background))] px-[var(--gutter)] pb-10 pt-10 sm:pb-14 sm:pt-12">
-        <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: 'radial-gradient(circle at 80% 24%, rgba(229,212,184,.32), transparent 38%)' }} />
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--card))] to-[hsl(var(--background))] px-[var(--gutter)] pb-10 pt-10 sm:pb-12 sm:pt-12 border-b border-[hsl(var(--border))]">
+        <div className="pointer-events-none absolute inset-0 opacity-35" style={{ background: 'radial-gradient(circle at 80% 24%, rgba(229,212,184,.3), transparent 38%)' }} />
         <div className="relative z-10 mx-auto max-w-[var(--max-w)]">
           <Reveal>
+            <div className="eyebrow mb-3">Partner With Us</div>
             <h1 className="display max-w-[640px] font-semibold text-[hsl(var(--foreground))]"
-              style={{ fontSize: 'clamp(1.85rem, 5.5vw, 4.6rem)', lineHeight: 1.05 }}>
+              style={{ fontSize: 'clamp(1.85rem, 4.8vw, 4rem)', lineHeight: 1.08 }}>
               Partner With Us for<br />
               <span className="text-[hsl(var(--accent))]">Quality Fabrics</span>
             </h1>
-            <p className="mt-4 max-w-[520px] text-sm leading-[1.72] text-[hsl(var(--muted-foreground))] sm:text-base sm:leading-[1.75]">
-              Have a fabric requirement or business enquiry? Send us your details and our team will get in touch to discuss your textile needs.
+            <p className="mt-4 max-w-[500px] text-xs leading-[1.72] text-[hsl(var(--muted-foreground))] sm:text-sm">
+              Have a fabric requirement or business enquiry? Send us your details and our team will get in touch to discuss your textile sourcing needs.
             </p>
           </Reveal>
         </div>
       </section>
 
       {/* Form + Info */}
-      <section className="px-[var(--gutter)] py-10 sm:py-14 lg:py-16">
+      <section className="px-[var(--gutter)] py-10 sm:py-12 lg:py-14">
         <div className="mx-auto max-w-[var(--max-w)]">
-          <div className="contact-grid grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-14">
+          <div className="contact-grid grid gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-12">
             <Reveal>
               <div>
                 <div className="eyebrow mb-3">Contact Information</div>
-                <h2 className="display max-w-[510px] text-[clamp(1.5rem,4vw,3.2rem)] font-semibold leading-[1.05] text-[hsl(var(--primary))]">
+                <h2 className="display max-w-[480px] text-[clamp(1.5rem,3.4vw,2.8rem)] font-semibold leading-[1.08] text-[hsl(var(--primary))]">
                   Let's Discuss Your<br />
                   <span className="text-[hsl(var(--accent))]">Fabric Requirements</span>
                 </h2>
-                <p className="mt-4 max-w-[390px] text-sm leading-[1.65] text-[hsl(var(--muted-foreground))]">
+                <p className="mt-4 max-w-[380px] text-xs leading-[1.7] text-[hsl(var(--muted-foreground))] sm:text-sm">
                   Fill out the form and our team will respond to your enquiry within 24 business hours.
                 </p>
-
               </div>
             </Reveal>
             
@@ -194,40 +246,36 @@ export function ContactPageContent() {
           </div>
 
           {/* Contact Cards */}
-          <div className="contact-cards mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="contact-cards mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[
-              { icon: <Phone size={22} />, title: 'Call Us', text: '+91 9879296213', href: 'tel:+919879296213', testId: 'link-call', color: '#0f3d5c' },
-              { icon: <Mail size={22} />, title: 'Email Us', text: 'devr8155@gmail.com', href: 'mailto:devr8155@gmail.com', testId: 'link-email', color: '#4a7ba7' },
-              { icon: <MapPin size={22} />, title: 'Get Directions', text: '36, Jash Market, Sahara Darwaja, Ring Road, Surat, Gujarat, India – 395002', href: 'https://www.google.com/maps/search/?api=1&query=36%2C%20Jash%20Market%2C%20Sahara%20Darwaja%2C%20Ring%20Road%2C%20Surat%2C%20Gujarat%2C%20India%20%E2%80%93%20395002', testId: 'link-directions', color: '#b79a68' }
+              { icon: <Phone size={20} />, title: 'Call Us', text: '+91 9879296213', href: 'tel:+919879296213', testId: 'link-call', color: '#0f3d5c' },
+              { icon: <Mail size={20} />, title: 'Email Us', text: 'devr8155@gmail.com', href: 'mailto:devr8155@gmail.com', testId: 'link-email', color: '#4a7ba7' },
+              { icon: <MapPin size={20} />, title: 'Get Directions', text: '36, Jash Market, Sahara Darwaja, Ring Road, Surat, Gujarat, India – 395002', href: 'https://www.google.com/maps/search/?api=1&query=36%2C%20Jash%20Market%2C%20Sahara%20Darwaja%2C%20Ring%20Road%2C%20Surat%2C%20Gujarat%2C%20India%20%E2%80%93%20395002', testId: 'link-directions', color: '#b79a68' }
             ].map((item, index) => (
               <motion.a
                 key={item.testId}
                 href={item.href}
                 target={item.title === 'Get Directions' ? '_blank' : undefined}
                 rel={item.title === 'Get Directions' ? 'noreferrer' : undefined}
-                initial={reduce ? undefined : { opacity: 0, y: 20 }}
+                initial={reduce ? undefined : { opacity: 0, y: 18 }}
                 whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={reduce ? undefined : { y: -4 }}
-                className="group flex flex-col items-center gap-4 overflow-hidden rounded-xl border-2 border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 text-center shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-lg sm:p-7"
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                whileHover={reduce ? undefined : { y: -3 }}
+                className="group flex flex-col items-center gap-3.5 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 text-center shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-6"
                 data-testid={item.testId}
               >
-                <motion.span
-                  whileHover={reduce ? undefined : { scale: 1.1, backgroundColor: item.color }}
-                  transition={{ duration: 0.3 }}
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-[hsl(var(--accent)/.15)] text-[hsl(var(--accent))] transition-colors"
-                  style={{ backgroundColor: `${item.color}20` }}
+                <div
+                  className="flex h-12 w-12 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-105"
+                  style={{ backgroundColor: `${item.color}15`, color: item.color }}
                 >
-                  <span className="transition-colors" style={{ color: item.color }}>
-                    {item.icon}
-                  </span>
-                </motion.span>
+                  {item.icon}
+                </div>
                 <div className="flex-1">
-                  <span className="block text-xs font-semibold uppercase tracking-[.14em] text-[hsl(var(--primary))]">
+                  <span className="block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--primary))]">
                     {item.title}
                   </span>
-                  <span className="mt-2 block text-sm leading-[1.6] text-[hsl(var(--muted-foreground))] transition group-hover:text-[hsl(var(--foreground))]">
+                  <span className="mt-1.5 block text-xs leading-[1.6] text-[hsl(var(--muted-foreground))] transition group-hover:text-[hsl(var(--foreground))] sm:text-sm">
                     {item.text}
                   </span>
                 </div>
@@ -273,7 +321,7 @@ export default function ContactPage() {
       <button 
         type="button" 
         onClick={scrollToTop} 
-        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] text-[hsl(var(--primary))] shadow-[var(--shadow-sm)] backdrop-blur transition hover:-translate-y-1" 
+        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] text-[hsl(var(--primary))] shadow-[var(--shadow-sm)] backdrop-blur transition hover:-translate-y-1 hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))]" 
         aria-label="Back to top" 
         data-testid="button-back-top"
       >
