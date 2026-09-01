@@ -183,15 +183,25 @@ function ContactForm() {
   );
 }
 
-function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+function Reveal({
+  children,
+  delay = 0,
+  className = '',
+  yOffset = 16,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+  yOffset?: number;
+}) {
   const reduce = useReducedMotion();
   return (
     <motion.div
       className={className}
-      initial={reduce ? undefined : { opacity: 0, y: 14 }}
+      initial={reduce ? false : { opacity: 0, y: yOffset }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.08, margin: '0px 0px -30px 0px' }}
-      transition={{ duration: 0.45, delay: Math.min(delay, 0.15), ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: false, amount: 0.05, margin: '0px 0px -25px 0px' }}
+      transition={{ duration: 0.45, delay: Math.min(delay, 0.2), ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -282,10 +292,10 @@ export function ContactPageContent() {
                   href={item.href}
                   target={item.label === 'Office Location' ? '_blank' : undefined}
                   rel={item.label === 'Office Location' ? 'noreferrer' : undefined}
-                  initial={reduce ? undefined : { opacity: 0, y: 16 }}
+                  initial={reduce ? false : { opacity: 0, y: 16 }}
                   whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.08 }}
-                  transition={{ duration: 0.38, delay: index * 0.06 }}
+                  viewport={{ once: false, amount: 0.05, margin: '0px 0px -20px 0px' }}
+                  transition={{ duration: 0.4, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
                   className="group flex flex-col justify-between border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md"
                   data-testid={item.testId}
                 >
