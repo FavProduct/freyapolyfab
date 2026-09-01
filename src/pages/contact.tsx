@@ -245,41 +245,76 @@ export function ContactPageContent() {
             </Reveal>
           </div>
 
-          {/* Contact Cards */}
-          <div className="contact-cards mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {[
-              { icon: <Phone size={20} />, title: 'Call Us', text: '+91 9879296213', href: 'tel:+919879296213', testId: 'link-call', color: '#0f3d5c' },
-              { icon: <Mail size={20} />, title: 'Email Us', text: 'devr8155@gmail.com', href: 'mailto:devr8155@gmail.com', testId: 'link-email', color: '#4a7ba7' },
-              { icon: <MapPin size={20} />, title: 'Get Directions', text: '36, Jash Market, Sahara Darwaja, Ring Road, Surat, Gujarat, India – 395002', href: 'https://www.google.com/maps/search/?api=1&query=36%2C%20Jash%20Market%2C%20Sahara%20Darwaja%2C%20Ring%20Road%2C%20Surat%2C%20Gujarat%2C%20India%20%E2%80%93%20395002', testId: 'link-directions', color: '#b79a68' }
-            ].map((item, index) => (
-              <motion.a
-                key={item.testId}
-                href={item.href}
-                target={item.title === 'Get Directions' ? '_blank' : undefined}
-                rel={item.title === 'Get Directions' ? 'noreferrer' : undefined}
-                initial={reduce ? undefined : { opacity: 0, y: 14 }}
-                whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.08 }}
-                transition={{ duration: 0.38, delay: index * 0.06 }}
-                className="group flex flex-col items-center gap-3.5 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 text-center shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-6"
-                data-testid={item.testId}
-              >
-                <div
-                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-200 group-hover:bg-[hsl(var(--accent)/.15)]"
-                  style={{ backgroundColor: `${item.color}15`, color: item.color }}
+          {/* Luxury Contact Directory */}
+          <div className="mt-14 border-t border-[hsl(var(--border))] pt-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  label: 'Phone Number',
+                  icon: <Phone size={18} />,
+                  title: 'Call Us Directly',
+                  text: '+91 9879296213',
+                  href: 'tel:+919879296213',
+                  testId: 'link-call',
+                  color: '#0f3d5c',
+                },
+                {
+                  label: 'Email Address',
+                  icon: <Mail size={18} />,
+                  title: 'Email Our Team',
+                  text: 'devr8155@gmail.com',
+                  href: 'mailto:devr8155@gmail.com',
+                  testId: 'link-email',
+                  color: '#4a7ba7',
+                },
+                {
+                  label: 'Office Location',
+                  icon: <MapPin size={18} />,
+                  title: 'Visit Our Office',
+                  text: '36, Jash Market, Sahara Darwaja, Ring Road, Surat, Gujarat, India – 395002',
+                  href: 'https://www.google.com/maps/search/?api=1&query=36%2C%20Jash%20Market%2C%20Sahara%20Darwaja%2C%20Ring%20Road%2C%20Surat%2C%20Gujarat%2C%20India%20%E2%80%93%20395002',
+                  testId: 'link-directions',
+                  color: '#b79a68',
+                },
+              ].map((item, index) => (
+                <motion.a
+                  key={item.testId}
+                  href={item.href}
+                  target={item.label === 'Office Location' ? '_blank' : undefined}
+                  rel={item.label === 'Office Location' ? 'noreferrer' : undefined}
+                  initial={reduce ? undefined : { opacity: 0, y: 16 }}
+                  whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.08 }}
+                  transition={{ duration: 0.38, delay: index * 0.06 }}
+                  className="group flex flex-col justify-between border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md"
+                  data-testid={item.testId}
                 >
-                  {item.icon}
-                </div>
-                <div className="flex-1">
-                  <span className="block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--primary))]">
-                    {item.title}
-                  </span>
-                  <span className="mt-1.5 block text-xs leading-[1.6] text-[hsl(var(--muted-foreground))] transition-colors group-hover:text-[hsl(var(--foreground))] sm:text-sm">
-                    {item.text}
-                  </span>
-                </div>
-              </motion.a>
-            ))}
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[hsl(var(--accent))]">
+                        {item.label}
+                      </span>
+                      <div
+                        className="flex h-9 w-9 items-center justify-center rounded-full transition-transform duration-200 group-hover:scale-110"
+                        style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                      >
+                        {item.icon}
+                      </div>
+                    </div>
+                    <span className="mt-3 block text-xs font-semibold text-[hsl(var(--muted-foreground))]">
+                      {item.title}
+                    </span>
+                    <span className="mt-2 block text-sm sm:text-base font-semibold leading-[1.65] text-[hsl(var(--foreground))] transition-colors group-hover:text-[hsl(var(--accent))]">
+                      {item.text}
+                    </span>
+                  </div>
+                  <div className="mt-6 border-t border-[hsl(var(--border))] pt-3 flex items-center justify-between text-xs font-semibold text-[hsl(var(--accent))]">
+                    <span>Connect Now</span>
+                    <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                  </div>
+                </motion.a>
+              ))}
+            </div>
           </div>
         </div>
       </section>

@@ -3,7 +3,7 @@ import { motion, useReducedMotion, useInView } from 'framer-motion';
 import {
   ArrowRight, Check, CircleArrowUp, Factory,
   Layers3, Mail, MapPin, Network, Package, Phone,
-  ShieldCheck, Sparkles, Store, Target, TrendingUp, Users, X, Award, CheckCircle2,
+  ShieldCheck, Sparkles, Store, Target, TrendingUp, Users, X, Award, CheckCircle2, Quote,
 } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -891,10 +891,20 @@ function USP() {
 
           {/* Supporting takeaway banner from PDF */}
           <Reveal delay={0.15}>
-            <div className="mt-8 rounded-lg border border-[hsl(var(--accent)/.3)] bg-[hsl(var(--background))] p-4 text-center sm:p-5">
-              <p className="text-xs font-medium leading-[1.65] text-[hsl(var(--foreground))] sm:text-sm">
+            <div className="relative mt-8 overflow-hidden rounded-2xl border-2 border-[hsl(var(--accent)/.35)] bg-gradient-to-r from-[hsl(var(--card))] via-[hsl(var(--background))] to-[hsl(var(--card))] p-6 text-center shadow-md sm:p-8">
+              <div className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-[hsl(var(--accent)/.12)] text-[hsl(var(--accent))]">
+                <Quote size={16} className="rotate-180" />
+              </div>
+              <p className="italic text-sm font-medium leading-[1.75] text-[hsl(var(--foreground))] sm:text-base md:text-[17px] max-w-3xl mx-auto">
                 &ldquo;Freya Poly Fab stands out through quality fabrics, reliable sourcing, and customer-focused textile solutions that drive long-term business relationships.&rdquo;
               </p>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold text-[hsl(var(--accent))] uppercase tracking-wider">
+                <span>Quality Fabrics</span>
+                <span className="text-[hsl(var(--muted-foreground)/.4)]">•</span>
+                <span>Reliable Sourcing</span>
+                <span className="text-[hsl(var(--muted-foreground)/.4)]">•</span>
+                <span>Customer-Focused Solutions</span>
+              </div>
             </div>
           </Reveal>
         </div>
