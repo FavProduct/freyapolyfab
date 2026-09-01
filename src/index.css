@@ -261,30 +261,30 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
 }
 
 /* ============================================================
-   RESPONSIVE BREAKPOINT RULES
+   RESPONSIVE BREAKPOINT RULES & ZOOM STABILITY
    ============================================================ */
 
 /* ── Large Desktop (1440px+) ── */
 @media (min-width: 1440px) {
   :root {
     --section-v: 5.5rem;
-    --gutter: max(3.5rem, calc((100vw - var(--max-w)) / 2));
+    --gutter: max(3rem, calc((100vw - var(--max-w)) / 2));
   }
 }
 
 /* ── Desktop & Laptop (1024px – 1439px) ── */
 @media (min-width: 1024px) and (max-width: 1439px) {
   :root {
-    --section-v: 4.75rem;
-    --gutter: clamp(2.25rem, 3.5vw, 3.5rem);
+    --section-v: 4.5rem;
+    --gutter: clamp(2rem, 3vw, 3rem);
   }
 }
 
 /* ── Tablet (768px – 1023px) ── */
 @media (min-width: 768px) and (max-width: 1023px) {
   :root {
-    --section-v: 3.75rem;
-    --gutter: clamp(1.75rem, 3vw, 2.5rem);
+    --section-v: 3.5rem;
+    --gutter: clamp(1.5rem, 2.5vw, 2.25rem);
   }
 
   /* 4-item grids adapt to 2 columns on tablet */
@@ -293,12 +293,6 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
   #usp .usp-grid,
   #fabric-supply .fabric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  /* G2M track wraps cleanly */
-  #g2m .g2m-track {
-    flex-wrap: wrap;
-    overflow-x: visible;
   }
 }
 
@@ -312,14 +306,14 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
   /* Hero Mobile */
   #home .hero-grid {
     grid-template-columns: 1fr !important;
-    padding-top: 5rem !important;
+    padding-top: 5.25rem !important;
     padding-bottom: 2.25rem !important;
     gap: 1.75rem !important;
   }
   #home h1 {
     font-size: clamp(1.85rem, 8.5vw, 2.65rem) !important;
     max-width: 100% !important;
-    line-height: 1.1 !important;
+    line-height: 1.12 !important;
   }
   #home .hero-buttons {
     flex-direction: column !important;
@@ -341,7 +335,7 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
   /* About Mobile */
   #about .about-grid {
     grid-template-columns: 1fr !important;
-    gap: 2rem !important;
+    gap: 1.75rem !important;
   }
   #about .fabric-panel {
     aspect-ratio: 4/3 !important;
@@ -408,8 +402,10 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
   }
 
   /* Revenue Streams Mobile */
-  #revenue .revenue-desktop { display: none !important; }
-  #revenue .revenue-mobile  { display: grid !important; }
+  #revenue .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
 
   /* Competitive Landscape Mobile */
   #competitive .competitive-grid {
@@ -418,15 +414,9 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
   }
 
   /* G2M Mobile */
-  #g2m .g2m-track {
-    flex-wrap: wrap !important;
-    overflow-x: visible !important;
-    padding-bottom: 0 !important;
-    gap: 0.5rem !important;
-  }
-  #g2m .g2m-track > div {
-    min-width: unset !important;
-    flex: 1 1 calc(50% - 0.5rem) !important;
+  #g2m .g2m-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.625rem !important;
   }
 
   /* Growth Strategy Mobile */
@@ -434,9 +424,6 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
     grid-template-columns: 1fr !important;
     gap: 1.25rem !important;
   }
-  #growth .growth-line { display: none !important; }
-  #growth .growth-dot  { display: none !important; }
-  #growth .growth-mt   { margin-top: 0 !important; }
 
   /* Fund Utilization Mobile */
   #fund-utilization .fund-grid {
@@ -467,7 +454,7 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
 /* ── Small Mobile (max 480px / 360px) ── */
 @media (max-width: 480px) {
   #home h1 {
-    font-size: clamp(1.65rem, 8vw, 2.15rem) !important;
+    font-size: clamp(1.65rem, 7.8vw, 2.15rem) !important;
   }
 
   #challenges .challenges-grid article h3,
@@ -486,7 +473,7 @@ footer [class*="border-[hsl(var(--primary-foreground)"] {
     line-height: 1.45 !important;
   }
 
-  #g2m .g2m-track > div {
-    flex: 1 1 100% !important;
+  #g2m .g2m-grid > div:last-child {
+    grid-column: span 2 !important;
   }
 }
