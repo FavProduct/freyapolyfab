@@ -80,6 +80,34 @@ export function Header() {
   const [activeSection, setActive]    = useState('home');
   const [location]                    = useLocation();
 
+  // Scroll listener with requestAnimationFrame hysteresis (prevents rapid toggle near threshold)
+  useEffect(() => {
+    let ticking = false;
+    let isScrolled = false;
+
+    const updateScroll = () => {
+      const y = window.scrollY;
+      const nextScrolled = y > (isScrolled ? 12 : 24);
+      if (nextScrolled !== isScrolled) {
+        isScrolled = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateScroll);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // IntersectionObserver for tracking active section without DOM offset layout queries
   useEffect(() => {
     if (location === '/contact') {
       setActive('contact');
@@ -87,35 +115,35 @@ export function Header() {
     }
 
     const sectionIds = allSections.map((s) => s.id);
+    const elements: HTMLElement[] = [];
 
-    const onScroll = () => {
-      setScrolled(window.scrollY > 15);
-
-      // Bottom of page detection
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
-        setActive('leadership');
-        return;
-      }
-
-      const scrollPosition = window.scrollY + 120;
-      let currentSection = 'home';
-
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.offsetTop;
-          if (scrollPosition >= top) {
-            currentSection = id;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find visible sections
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
           }
         }
+      },
+      {
+        rootMargin: '-15% 0px -70% 0px',
+        threshold: 0,
       }
+    );
 
-      setActive(currentSection);
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        elements.push(el);
+        observer.observe(el);
+      }
+    });
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+      observer.disconnect();
     };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
   }, [location]);
 
   /* Close mobile menu on resize to desktop */
@@ -127,10 +155,10 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-[hsl(var(--foreground)/.07)] transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-200 ${
         scrolled
-          ? 'bg-[rgba(255,255,255,0.88)] shadow-sm shadow-[rgba(74,70,64,.04)] backdrop-blur-[20px] backdrop-saturate-150'
-          : 'bg-[rgba(255,255,255,0.75)] backdrop-blur-[14px] backdrop-saturate-150'
+          ? 'border-[hsl(var(--foreground)/.09)] bg-[rgba(255,255,255,0.92)] shadow-sm shadow-[rgba(74,70,64,.04)] backdrop-blur-md'
+          : 'border-[hsl(var(--foreground)/.05)] bg-[rgba(255,255,255,0.85)] backdrop-blur-md'
       }`}
       data-testid="header-site"
     >
@@ -153,6 +181,8 @@ export function Header() {
                 className="h-9 w-auto object-contain xl:h-10"
                 loading="eager"
                 fetchPriority="high"
+                width="140"
+                height="40"
               />
             </a>
           </div>
@@ -180,7 +210,7 @@ export function Header() {
                 >
                   <span>{label}</span>
                   <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-[hsl(var(--accent))] transition-all duration-300 ${
+                    className={`absolute bottom-0 left-0 h-[2px] bg-[hsl(var(--accent))] transition-[width] duration-200 ${
                       active ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}
                   />
@@ -193,7 +223,7 @@ export function Header() {
           <div className="flex shrink-0 items-center pl-6">
             <a
               href="/contact"
-              className="whitespace-nowrap inline-flex min-h-[42px] items-center gap-2 bg-[hsl(var(--accent))] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[.13em] text-[hsl(var(--accent-foreground))] transition hover:-translate-y-0.5 hover:bg-[hsl(var(--accent)/.88)] shadow-sm active:scale-[.99]"
+              className="whitespace-nowrap inline-flex min-h-[42px] items-center gap-2 bg-[hsl(var(--accent))] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[.13em] text-[hsl(var(--accent-foreground))] transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-[hsl(var(--accent)/.88)] shadow-sm active:scale-[.99]"
               data-testid="button-header-work"
             >
               Partner With Us <ArrowRight size={13} />
@@ -208,7 +238,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
-              className="flex h-11 w-11 items-center justify-center rounded-sm text-[hsl(var(--foreground))] transition hover:bg-[hsl(var(--secondary)/.6)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))]"
+              className="flex h-11 w-11 items-center justify-center rounded-sm text-[hsl(var(--foreground))] transition-colors hover:bg-[hsl(var(--secondary)/.6)] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))]"
               aria-label={open ? 'Close navigation' : 'Open navigation'}
               aria-expanded={open}
               aria-controls="mobile-nav"
@@ -218,7 +248,7 @@ export function Header() {
             </button>
           </div>
 
-          {/* Center: Logo (Truly mathematically centered in viewport) */}
+          {/* Center: Logo */}
           <div className="flex items-center justify-center">
             <a
               href="/"
@@ -232,6 +262,8 @@ export function Header() {
                 className="h-8 w-auto object-contain sm:h-9"
                 loading="eager"
                 fetchPriority="high"
+                width="120"
+                height="36"
               />
             </a>
           </div>
@@ -240,7 +272,7 @@ export function Header() {
           <div className="flex items-center justify-end">
             <a
               href="/contact"
-              className="whitespace-nowrap flex h-10 items-center justify-center gap-1.5 rounded-sm bg-[hsl(var(--accent))] px-3 text-[11px] font-semibold uppercase tracking-[.1em] text-white transition hover:bg-[hsl(var(--accent)/.9)]"
+              className="whitespace-nowrap flex h-10 items-center justify-center gap-1.5 rounded-sm bg-[hsl(var(--accent))] px-3 text-[11px] font-semibold uppercase tracking-[.1em] text-white transition-colors hover:bg-[hsl(var(--accent)/.9)]"
               aria-label="Contact Freya Poly Fab"
               data-testid="button-mobile-quick-contact"
             >
@@ -252,16 +284,16 @@ export function Header() {
 
       </div>
 
-      {/* ── Mobile Nav Drawer ────────────────────────────────── */}
+      {/* ── Mobile Nav Drawer (GPU-Optimized) ────────────────── */}
       <AnimatePresence>
         {open && (
           <motion.nav
             id="mobile-nav"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="max-h-[calc(100vh-68px)] overflow-y-auto border-t border-[hsl(var(--foreground)/.08)] bg-[rgba(255,255,255,0.96)] shadow-xl backdrop-blur-[24px] backdrop-saturate-150 xl:hidden scrollbar-thin"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="max-h-[calc(100vh-68px)] overflow-y-auto border-t border-[hsl(var(--foreground)/.08)] bg-[rgba(255,255,255,0.98)] shadow-xl backdrop-blur-xl xl:hidden scrollbar-thin"
             aria-label="Mobile navigation"
           >
             <div className="mx-auto max-w-[var(--max-w)] px-[var(--gutter)] pb-8 pt-3">
@@ -269,15 +301,12 @@ export function Header() {
                 Sections Directory
               </div>
               <div className="divide-y divide-[hsl(var(--border))]">
-                {allSections.map(({ id, label, href }, i) => {
+                {allSections.map(({ id, label, href }) => {
                   const active = location === '/contact' ? id === 'contact' : activeSection === id;
                   return (
-                    <motion.a
+                    <a
                       key={id}
                       href={href}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: Math.min(i * 0.02, 0.25) }}
                       onClick={(e) => {
                         if (id !== 'contact' && location === '/') {
                           e.preventDefault();
@@ -294,7 +323,7 @@ export function Header() {
                     >
                       <span>{label}</span>
                       <ChevronRight size={14} className="text-[hsl(var(--accent))]" />
-                    </motion.a>
+                    </a>
                   );
                 })}
               </div>

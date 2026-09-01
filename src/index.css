@@ -168,11 +168,16 @@
   content: '';
   position: absolute;
   inset: -25%;
-  opacity: .2;
+  opacity: .18;
   transform: rotate(-13deg);
   background: repeating-linear-gradient(100deg, transparent 0 7px, rgba(255,255,255,.5) 8px 9px, transparent 10px 16px);
-  mix-blend-mode: soft-light;
   pointer-events: none;
+}
+@media (min-width: 768px) {
+  .fabric-panel::before {
+    mix-blend-mode: soft-light;
+    opacity: .22;
+  }
 }
 .fabric-panel::after {
   content: '';
@@ -185,39 +190,65 @@
 }
 
 /* ============================================================
-   THREAD SVG ANIMATION
+   THREAD SVG ANIMATION (GPU-Friendly)
    ============================================================ */
 .thread-svg {
   pointer-events: none;
   overflow: visible;
+  transform: translate3d(0, 0, 0);
 }
 .thread-path {
   stroke-dasharray: 860;
   stroke-dashoffset: 860;
-  animation: draw-thread 2.4s cubic-bezier(.65,0,.35,1) .35s forwards;
+  animation: draw-thread 2.2s cubic-bezier(.65,0,.35,1) .2s forwards;
 }
 
 /* ============================================================
-   KEYFRAMES
+   KEYFRAMES & PERFORMANCE STABILITY
    ============================================================ */
 @keyframes draw-thread { to { stroke-dashoffset: 0; } }
 @keyframes drift {
   0%, 100% { transform: translate3d(0, 0, 0); }
-  50%       { transform: translate3d(0, -7px, 0); }
+  50%       { transform: translate3d(0, -6px, 0); }
 }
 @keyframes reveal {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
-.drift  { animation: drift 7s ease-in-out infinite; }
-.reveal { animation: reveal .8s cubic-bezier(.22,1,.36,1) both; }
 
+@media (min-width: 1024px) {
+  .drift { animation: drift 7s ease-in-out infinite; }
+}
+.reveal { animation: reveal .6s cubic-bezier(.22,1,.36,1) both; }
+
+/* GPU Layer Utility */
+.gpu-stable {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Touch Device Hover Protection: Prevent cards from jumping or sticking on touch */
+@media (hover: none) {
+  .hover\:-translate-y-0\.5:hover,
+  .hover\:-translate-y-1:hover,
+  .hover\:scale-105:hover,
+  .hover\:scale-110:hover,
+  .group:hover .group-hover\:scale-105,
+  .group:hover .group-hover\:scale-110,
+  .group:hover .group-hover\:translate-x-1 {
+    transform: none !important;
+  }
+}
+
+/* Reduced Motion Compliance */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: .01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
+    transition-duration: 0.001ms !important;
+    transform: none !important;
   }
 }
 

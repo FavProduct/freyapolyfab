@@ -188,10 +188,10 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
   return (
     <motion.div
       className={className}
-      initial={reduce ? undefined : { opacity: 0, y: 18 }}
+      initial={reduce ? undefined : { opacity: 0, y: 14 }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.16 }}
-      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, amount: 0.08, margin: '0px 0px -30px 0px' }}
+      transition={{ duration: 0.45, delay: Math.min(delay, 0.15), ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -238,7 +238,7 @@ export function ContactPageContent() {
               </div>
             </Reveal>
             
-            <Reveal delay={0.1}>
+            <Reveal delay={0.08}>
               <div id="contact-form">
                 <ContactForm />
               </div>
@@ -257,16 +257,15 @@ export function ContactPageContent() {
                 href={item.href}
                 target={item.title === 'Get Directions' ? '_blank' : undefined}
                 rel={item.title === 'Get Directions' ? 'noreferrer' : undefined}
-                initial={reduce ? undefined : { opacity: 0, y: 18 }}
+                initial={reduce ? undefined : { opacity: 0, y: 14 }}
                 whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.08 }}
-                whileHover={reduce ? undefined : { y: -3 }}
-                className="group flex flex-col items-center gap-3.5 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 text-center shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-6"
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.38, delay: index * 0.06 }}
+                className="group flex flex-col items-center gap-3.5 overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 text-center shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-6"
                 data-testid={item.testId}
               >
                 <div
-                  className="flex h-12 w-12 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-105"
+                  className="flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-200 group-hover:bg-[hsl(var(--accent)/.15)]"
                   style={{ backgroundColor: `${item.color}15`, color: item.color }}
                 >
                   {item.icon}
@@ -275,7 +274,7 @@ export function ContactPageContent() {
                   <span className="block text-xs font-semibold uppercase tracking-[.12em] text-[hsl(var(--primary))]">
                     {item.title}
                   </span>
-                  <span className="mt-1.5 block text-xs leading-[1.6] text-[hsl(var(--muted-foreground))] transition group-hover:text-[hsl(var(--foreground))] sm:text-sm">
+                  <span className="mt-1.5 block text-xs leading-[1.6] text-[hsl(var(--muted-foreground))] transition-colors group-hover:text-[hsl(var(--foreground))] sm:text-sm">
                     {item.text}
                   </span>
                 </div>
@@ -321,7 +320,7 @@ export default function ContactPage() {
       <button 
         type="button" 
         onClick={scrollToTop} 
-        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] text-[hsl(var(--primary))] shadow-[var(--shadow-sm)] backdrop-blur transition hover:-translate-y-1 hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))]" 
+        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.95)] text-[hsl(var(--primary))] shadow-md backdrop-blur-md transition-colors hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))]" 
         aria-label="Back to top" 
         data-testid="button-back-top"
       >

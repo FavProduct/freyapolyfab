@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { motion, useReducedMotion, useInView } from 'framer-motion';
 import {
   ArrowRight, Check, CircleArrowUp, Factory,
@@ -25,8 +25,6 @@ const queryClient = new QueryClient();
 /* ──────────────────────────────────────────────────────────
    SOURCE OF TRUTH DATA (Strictly from Company PDF)
    ────────────────────────────────────────────────────────── */
-
-// PDF Page 3: Market Challenges
 const challenges = [
   {
     number: '01',
@@ -256,10 +254,10 @@ function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; 
   return (
     <motion.div
       className={className}
-      initial={reduce ? undefined : { opacity: 0, y: 16 }}
+      initial={reduce ? undefined : { opacity: 0, y: 14 }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, amount: 0.08, margin: '0px 0px -30px 0px' }}
+      transition={{ duration: 0.45, delay: Math.min(delay, 0.15), ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -283,21 +281,29 @@ function Thread({ className = '' }: { className?: string }) {
 
 function AnimatedNumber({ value }: { value: number }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [display, setDisplay] = useState(0);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
   useEffect(() => {
     if (!inView) return;
     let start: number;
-    const dur = 1200;
+    const dur = 900;
+    let frameId: number;
     const run = (now: number) => {
       if (!start) start = now;
       const p = Math.min((now - start) / dur, 1);
-      setDisplay(Math.floor(value * (1 - Math.pow(1 - p, 4))));
-      if (p < 1) requestAnimationFrame(run);
+      const current = Math.floor(value * (1 - Math.pow(1 - p, 3)));
+      if (ref.current) {
+        ref.current.textContent = String(current);
+      }
+      if (p < 1) {
+        frameId = requestAnimationFrame(run);
+      } else {
+        if (ref.current) ref.current.textContent = String(value);
+      }
     };
-    requestAnimationFrame(run);
+    frameId = requestAnimationFrame(run);
+    return () => cancelAnimationFrame(frameId);
   }, [inView, value]);
-  return <span ref={ref}>{display}</span>;
+  return <span ref={ref}>{value}</span>;
 }
 
 function SectionHead({
@@ -358,9 +364,9 @@ function Hero() {
         {/* Text */}
         <motion.div
           className="hero-text flex flex-col items-start"
-          initial={reduce ? undefined : { opacity: 0, y: 18 }}
+          initial={reduce ? undefined : { opacity: 0, y: 14 }}
           animate={reduce ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="eyebrow mb-3">Textile Trading &amp; Supply Partner</div>
           <h1
@@ -387,7 +393,7 @@ function Hero() {
             <button
               type="button"
               onClick={() => goTo('solutions')}
-              className="inline-flex min-h-[48px] min-w-[200px] items-center justify-center gap-3 bg-[hsl(var(--accent))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-white shadow-sm transition hover:bg-[hsl(var(--accent)/.88)] active:scale-[.99]"
+              className="inline-flex min-h-[48px] min-w-[200px] items-center justify-center gap-3 bg-[hsl(var(--accent))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-white shadow-sm transition-colors hover:bg-[hsl(var(--accent)/.88)] active:scale-[.99]"
               data-testid="button-hero-solutions"
             >
               Explore Solutions <ArrowRight size={15} />
@@ -395,7 +401,7 @@ function Hero() {
             <button
               type="button"
               onClick={() => goTo('contact')}
-              className="inline-flex min-h-[48px] min-w-[176px] items-center justify-center gap-3 border border-[hsl(var(--accent)/.65)] bg-transparent px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-[hsl(var(--foreground))] transition hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/.05)] active:scale-[.99]"
+              className="inline-flex min-h-[48px] min-w-[176px] items-center justify-center gap-3 border border-[hsl(var(--accent)/.65)] bg-transparent px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-[hsl(var(--foreground))] transition-colors hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/.05)] active:scale-[.99]"
               data-testid="button-hero-contact"
             >
               Work With Us <ArrowRight size={15} />
@@ -407,9 +413,9 @@ function Hero() {
         <motion.div
           className="hero-image-wrap relative mx-auto w-full"
           style={{ maxWidth: 'min(100%, 480px)' }}
-          initial={reduce ? undefined : { opacity: 0, scale: 0.96 }}
+          initial={reduce ? undefined : { opacity: 0, scale: 0.98 }}
           animate={reduce ? undefined : { opacity: 1, scale: 1 }}
-          transition={{ duration: 0.85, delay: 0.12 }}
+          transition={{ duration: 0.6, delay: 0.08 }}
         >
           <div
             className="hero-image-inner relative overflow-hidden border border-[hsl(var(--border))] bg-[hsl(var(--secondary))] shadow-xl shadow-[rgba(74,70,64,.08)]"
@@ -420,6 +426,10 @@ function Hero() {
               alt="Rolled textile fabrics in warm neutral tones"
               className="h-full w-full object-cover brightness-105 saturate-[.75]"
               loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              width="480"
+              height="520"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(250,248,243,.8)] via-transparent to-[rgba(229,212,184,.12)] pointer-events-none" />
             <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between border-t border-[hsl(var(--foreground)/.14)] pt-3 text-[10px] uppercase tracking-[.17em] text-[hsl(var(--foreground)/.8)]">
@@ -452,6 +462,9 @@ function About() {
                 alt="Close-up of woven textile fibers in warm neutral tones"
                 className="h-full w-full object-cover brightness-105 saturate-[.75]"
                 loading="lazy"
+                decoding="async"
+                width="460"
+                height="490"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-[rgba(183,154,104,.15)] to-transparent pointer-events-none" />
               <div className="absolute bottom-0 left-0 right-0 bg-[hsl(var(--secondary)/.95)] p-4 sm:p-5 backdrop-blur-sm border-t border-[hsl(var(--border))]">
@@ -466,7 +479,7 @@ function About() {
             <div className="absolute -bottom-3.5 right-0 hidden h-12 w-12 border-b-2 border-r-2 border-[hsl(var(--accent))] sm:block pointer-events-none" />
           </Reveal>
 
-          <Reveal delay={0.1}>
+          <Reveal delay={0.08}>
             <div className="eyebrow mb-3">About Us</div>
             <h2
               className="display max-w-[540px] font-semibold text-[hsl(var(--primary))]"
@@ -504,7 +517,7 @@ function About() {
               <button
                 type="button"
                 onClick={() => goTo('mission')}
-                className="group inline-flex items-center gap-2 border-b border-[hsl(var(--accent))] pb-1.5 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--foreground))] transition hover:text-[hsl(var(--accent))]"
+                className="group inline-flex items-center gap-2 border-b border-[hsl(var(--accent))] pb-1.5 text-xs font-semibold uppercase tracking-[.15em] text-[hsl(var(--foreground))] transition-colors hover:text-[hsl(var(--accent))]"
                 data-testid="button-about-learn"
               >
                 Our Mission &amp; Vision <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
@@ -545,8 +558,8 @@ function Mission() {
 
         <div className="mission-grid mt-10 grid items-stretch gap-6 md:grid-cols-2">
           {cards.map((card, i) => (
-            <Reveal key={card.label} delay={i * 0.1} className="flex h-full">
-              <article className="relative flex flex-1 flex-col justify-between overflow-hidden rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background)/.8)] p-6 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-8">
+            <Reveal key={card.label} delay={i * 0.08} className="flex h-full">
+              <article className="relative flex flex-1 flex-col justify-between overflow-hidden rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background)/.8)] p-6 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.6)] hover:shadow-md sm:p-8">
                 <span className="absolute right-5 top-4 font-mono text-5xl font-light text-[hsl(var(--accent)/.18)] select-none">
                   {card.number}
                 </span>
@@ -593,11 +606,11 @@ function Challenges() {
             return (
               <motion.article
                 key={c.title}
-                initial={reduce ? undefined : { opacity: 0, y: 18 }}
+                initial={reduce ? undefined : { opacity: 0, y: 14 }}
                 whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.14 }}
-                transition={{ duration: 0.44, delay: i * 0.06 }}
-                className="group flex flex-col justify-between rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-5"
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.38, delay: Math.min(i * 0.04, 0.12) }}
+                className="group flex flex-col justify-between rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm transition-[border-color,box-shadow] duration-200 hover:shadow-md sm:p-5"
                 style={{ borderTopWidth: '3px', borderTopColor: c.accent }}
               >
                 <div>
@@ -630,7 +643,7 @@ function Challenges() {
 function Solutions() {
   const reduce = useReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(trackRef, { once: true, amount: 0.28 });
+  const inView = useInView(trackRef, { once: true, amount: 0.15 });
 
   return (
     <section id="solutions" className="section-pad bg-[hsl(var(--card))] border-t border-[hsl(var(--border))]">
@@ -649,7 +662,8 @@ function Solutions() {
             <motion.div
               initial={{ scaleX: 0 }}
               animate={inView && !reduce ? { scaleX: 1 } : {}}
-              transition={{ duration: 0.85, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.75, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left' }}
               className="h-full w-full origin-left bg-gradient-to-r from-[hsl(var(--accent)/.2)] via-[hsl(var(--accent)/.5)] to-[hsl(var(--accent)/.2)]"
             />
           </div>
@@ -660,13 +674,13 @@ function Solutions() {
               return (
                 <motion.article
                   key={s.number}
-                  initial={reduce ? undefined : { opacity: 0, scale: 0.95 }}
-                  whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
-                  viewport={{ once: true, amount: 0.16 }}
-                  transition={{ duration: 0.45, delay: 0.25 + i * 0.1 }}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-lg border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] p-6 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent))] sm:p-7"
+                  initial={reduce ? undefined : { opacity: 0, y: 14 }}
+                  whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.08 }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-lg border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] p-6 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent))] sm:p-7"
                 >
-                  <div className="absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(var(--accent)/.1)] font-mono text-xs font-bold text-[hsl(var(--accent))] transition-all duration-300 group-hover:bg-[hsl(var(--accent))] group-hover:text-white">
+                  <div className="absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full bg-[hsl(var(--accent)/.1)] font-mono text-xs font-bold text-[hsl(var(--accent))] transition-colors duration-200 group-hover:bg-[hsl(var(--accent))] group-hover:text-white">
                     {s.number}
                   </div>
                   <div>
@@ -681,11 +695,12 @@ function Solutions() {
                     </p>
                   </div>
                   <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '100%' }}
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.5 + i * 0.1 }}
-                    className="mt-6 h-[2px] bg-gradient-to-r from-[hsl(var(--accent))] to-transparent"
+                    style={{ transformOrigin: 'left' }}
+                    transition={{ duration: 0.45, delay: 0.25 + i * 0.06 }}
+                    className="mt-6 h-[2px] bg-gradient-to-r from-[hsl(var(--accent))] to-transparent origin-left"
                   />
                 </motion.article>
               );
@@ -719,11 +734,11 @@ export function FabricSupply() {
           {fabricCategories.map((item, i) => (
             <motion.article
               key={item.number}
-              initial={reduce ? undefined : { opacity: 0, y: 18 }}
+              initial={reduce ? undefined : { opacity: 0, y: 14 }}
               whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.14 }}
-              transition={{ duration: 0.45, delay: i * 0.08 }}
-              className="group flex flex-col overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm transition-all duration-300 hover:shadow-md hover:border-[hsl(var(--accent)/.5)]"
+              viewport={{ once: true, amount: 0.08 }}
+              transition={{ duration: 0.38, delay: Math.min(i * 0.04, 0.12) }}
+              className="group flex flex-col overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm transition-[border-color,box-shadow] duration-200 hover:shadow-md hover:border-[hsl(var(--accent)/.5)]"
             >
               {/* Image Container with Aspect Ratio */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-[hsl(var(--secondary))]">
@@ -732,6 +747,9 @@ export function FabricSupply() {
                   alt={item.title}
                   className="h-full w-full object-cover brightness-105 saturate-[.75] transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
+                  decoding="async"
+                  width="320"
+                  height="240"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,.5)] via-transparent to-transparent opacity-80" />
                 <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white">
@@ -790,14 +808,14 @@ function Offerings() {
             return (
               <motion.article
                 key={o.title}
-                initial={reduce ? undefined : { opacity: 0, scale: 0.95 }}
-                whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.14 }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
-                className="group flex flex-col items-center justify-between rounded-lg bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--secondary)/.3)] p-4 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:border-[hsl(var(--accent)/.5)] border border-[hsl(var(--border))] sm:p-5"
+                initial={reduce ? undefined : { opacity: 0, y: 14 }}
+                whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.38, delay: Math.min(i * 0.04, 0.12) }}
+                className="group flex flex-col items-center justify-between rounded-lg bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--secondary)/.3)] p-4 text-center shadow-sm transition-[border-color,box-shadow] duration-200 hover:shadow-md hover:border-[hsl(var(--accent)/.5)] border border-[hsl(var(--border))] sm:p-5"
               >
                 <div>
-                  <div className="mb-3.5 mx-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--accent)/.12)] transition-colors duration-300 group-hover:bg-[hsl(var(--accent)/.22)]">
+                  <div className="mb-3.5 mx-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--accent)/.12)] transition-colors duration-200 group-hover:bg-[hsl(var(--accent)/.22)]">
                     <Icon size={22} strokeWidth={1.5} className="text-[hsl(var(--accent))]" />
                   </div>
                   <h3 className="mb-1.5 text-xs font-semibold leading-[1.35] text-[hsl(var(--foreground))] sm:text-sm sm:leading-[1.4]">
@@ -850,11 +868,11 @@ function USP() {
             {uspPoints.map((item, i) => (
               <motion.article
                 key={item.number}
-                initial={reduce ? undefined : { opacity: 0, y: 18 }}
+                initial={reduce ? undefined : { opacity: 0, y: 14 }}
                 whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.16 }}
-                transition={{ duration: 0.44, delay: i * 0.07 }}
-                className="group flex flex-col justify-between rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] p-4 backdrop-blur-sm transition-all duration-300 hover:bg-[hsl(var(--card))] hover:shadow-md sm:p-5"
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.38, delay: Math.min(i * 0.04, 0.12) }}
+                className="group flex flex-col justify-between rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] p-4 backdrop-blur-sm transition-[border-color,box-shadow] duration-200 hover:bg-[hsl(var(--card))] hover:shadow-md sm:p-5"
               >
                 <div>
                   <div className="mb-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--accent)/.12)] font-mono text-xs font-bold text-[hsl(var(--accent))]">
@@ -872,7 +890,7 @@ function USP() {
           </div>
 
           {/* Supporting takeaway banner from PDF */}
-          <Reveal delay={0.25}>
+          <Reveal delay={0.15}>
             <div className="mt-8 rounded-lg border border-[hsl(var(--accent)/.3)] bg-[hsl(var(--background))] p-4 text-center sm:p-5">
               <p className="text-xs font-medium leading-[1.65] text-[hsl(var(--foreground))] sm:text-sm">
                 &ldquo;Freya Poly Fab stands out through quality fabrics, reliable sourcing, and customer-focused textile solutions that drive long-term business relationships.&rdquo;
@@ -907,11 +925,11 @@ function MarketAlignment() {
           {stpSteps.map((step, i) => (
             <motion.article
               key={step.title}
-              initial={reduce ? undefined : { opacity: 0, y: 20 }}
+              initial={reduce ? undefined : { opacity: 0, y: 14 }}
               whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.18 }}
-              transition={{ duration: 0.48, delay: i * 0.1 }}
-              className="flex flex-col justify-between rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background)/.7)] p-5 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.5)] hover:shadow-md sm:p-6"
+              viewport={{ once: true, amount: 0.08 }}
+              transition={{ duration: 0.4, delay: Math.min(i * 0.06, 0.12) }}
+              className="flex flex-col justify-between rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background)/.7)] p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.5)] hover:shadow-md sm:p-6"
             >
               <div>
                 <div className="mb-3 flex items-center justify-between">
@@ -948,7 +966,7 @@ function MarketAlignment() {
 function MarketSize() {
   const reduce = useReducedMotion();
   const chartRef = useRef<HTMLDivElement>(null);
-  const chartInView = useInView(chartRef, { once: true, amount: 0.28 });
+  const chartInView = useInView(chartRef, { once: true, amount: 0.15 });
 
   const barData = [
     { name: 'India 2025',  value: 248.7, fill: '#0f3d5c' },
@@ -970,7 +988,7 @@ function MarketSize() {
 
         <div className="market-grid mt-10 grid gap-6 lg:grid-cols-2">
           {/* Chart */}
-          <Reveal delay={0.1}>
+          <Reveal delay={0.08}>
             <div ref={chartRef} className="h-[300px] overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 shadow-sm sm:h-[340px] sm:p-5">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={barData} margin={{ top: 12, right: 12, left: 4, bottom: 44 }}>
@@ -988,7 +1006,7 @@ function MarketSize() {
                     dataKey="value"
                     radius={[4, 4, 0, 0]}
                     animationBegin={0}
-                    animationDuration={chartInView && !reduce ? 900 : 0}
+                    animationDuration={chartInView && !reduce ? 700 : 0}
                   >
                     {barData.map((entry, idx) => (
                       <Cell key={idx} fill={entry.fill} />
@@ -1000,7 +1018,7 @@ function MarketSize() {
           </Reveal>
 
           {/* Stat Cards */}
-          <Reveal delay={0.14}>
+          <Reveal delay={0.12}>
             <div className="flex flex-col gap-4">
               <div className="relative overflow-hidden rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
@@ -1106,8 +1124,8 @@ function RevenueStreams() {
         {/* 3 Equal Cards */}
         <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {revenueStreams.map((s, i) => (
-            <Reveal key={s.title} delay={i * 0.08} className="flex h-full">
-              <article className="flex flex-1 flex-col justify-between rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-5 shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.5)] hover:shadow-md sm:p-6">
+            <Reveal key={s.title} delay={i * 0.06} className="flex h-full">
+              <article className="flex flex-1 flex-col justify-between rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-5 shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.5)] hover:shadow-md sm:p-6">
                 <div>
                   <div
                     className="mb-3.5 flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold"
@@ -1167,10 +1185,10 @@ function CompetitiveLandscape() {
         <div className="competitive-grid mt-10 grid items-stretch gap-6 lg:grid-cols-2">
           {/* Left: Existing Solutions & Issues */}
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, x: -20 }}
-            whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            initial={reduce ? undefined : { opacity: 0, y: 14 }}
+            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.08 }}
             className="flex flex-col gap-4"
           >
             <article className="flex-1 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 sm:p-6 shadow-sm">
@@ -1200,10 +1218,10 @@ function CompetitiveLandscape() {
 
           {/* Right: Our Edge */}
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, x: 20 }}
-            whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 0.18 }}
+            initial={reduce ? undefined : { opacity: 0, y: 14 }}
+            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.14 }}
             className="relative flex flex-col justify-between overflow-hidden rounded-xl border-2 border-[hsl(var(--accent)/.45)] bg-gradient-to-br from-[hsl(var(--accent)/.06)] to-[hsl(var(--card))] p-6 shadow-md sm:p-7"
           >
             <div>
@@ -1265,18 +1283,18 @@ function G2MStrategy() {
           {g2mItems.map(({ number, label, Icon }, i) => (
             <motion.div
               key={label}
-              initial={reduce ? undefined : { opacity: 0, y: 14 }}
+              initial={reduce ? undefined : { opacity: 0, y: 12 }}
               whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.32, delay: i * 0.05 }}
-              className={`group flex flex-col items-center justify-between rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-4 text-center shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent))] hover:shadow-md sm:p-5 ${
+              viewport={{ once: true, amount: 0.08 }}
+              transition={{ duration: 0.32, delay: Math.min(i * 0.03, 0.12) }}
+              className={`group flex flex-col items-center justify-between rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-4 text-center shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent))] hover:shadow-md sm:p-5 ${
                 i === 4 ? 'col-span-2 sm:col-span-1' : ''
               }`}
             >
               <div className="mb-2 font-mono text-[10px] font-bold text-[hsl(var(--accent))]">
                 {number}
               </div>
-              <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-[hsl(var(--accent)/.1)] text-[hsl(var(--accent))] transition-transform duration-300 group-hover:scale-110">
+              <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-[hsl(var(--accent)/.1)] text-[hsl(var(--accent))] transition-transform duration-200 group-hover:scale-110">
                 <Icon size={18} />
               </div>
               <span className="text-xs font-semibold uppercase tracking-[.06em] text-[hsl(var(--foreground))]">
@@ -1286,7 +1304,7 @@ function G2MStrategy() {
           ))}
         </div>
 
-        <Reveal delay={0.25}>
+        <Reveal delay={0.15}>
           <div className="mt-8 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.4)] p-4 text-center">
             <p className="text-xs leading-[1.68] text-[hsl(var(--foreground))] sm:text-sm">
               &ldquo;Freya Poly Fab aims to accelerate growth through strong customer relationships, reliable sourcing, digital reach, and strategic market expansion.&rdquo;
@@ -1309,7 +1327,6 @@ function GrowthStrategy() {
       title: 'Short-Term Perspective',
       subtitle: 'Establishing Manufacturing Foundation',
       icon: Factory,
-      delay: 0.2,
       items: [
         'Establish a textile manufacturing unit with required machinery and infrastructure.',
         'Develop in-house production capabilities to ensure better quality control and efficient supply.',
@@ -1320,7 +1337,6 @@ function GrowthStrategy() {
       title: 'Long-Term Perspective',
       subtitle: 'Scaling Capacity & Brand Positioning',
       icon: Award,
-      delay: 0.35,
       items: [
         'Increase manufacturing capacity and expand into diverse textile product categories.',
         'Build a strong regional and national distribution network for wider market reach.',
@@ -1341,7 +1357,7 @@ function GrowthStrategy() {
         </SectionHead>
 
         {/* Goal Banner from PDF */}
-        <Reveal delay={0.1}>
+        <Reveal delay={0.08}>
           <div className="mt-8 rounded-xl border border-[hsl(var(--accent)/.4)] bg-gradient-to-r from-[hsl(var(--card))] via-[hsl(var(--secondary)/.4)] to-[hsl(var(--card))] p-5 sm:p-6 shadow-sm">
             <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[hsl(var(--accent))]">
               Strategic Vision Goal
@@ -1364,11 +1380,11 @@ function GrowthStrategy() {
             return (
               <motion.article
                 key={phase.title}
-                initial={reduce ? undefined : { opacity: 0, y: 20 }}
+                initial={reduce ? undefined : { opacity: 0, y: 14 }}
                 whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.16 }}
-                transition={{ duration: 0.48, delay: phase.delay }}
-                className="flex flex-1 flex-col overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm transition-all duration-300 hover:border-[hsl(var(--accent)/.45)] hover:shadow-md"
+                viewport={{ once: true, amount: 0.08 }}
+                transition={{ duration: 0.4, delay: pi * 0.08 }}
+                className="flex flex-1 flex-col overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm transition-[border-color,box-shadow] duration-200 hover:border-[hsl(var(--accent)/.45)] hover:shadow-md"
               >
                 <div className="border-b border-[hsl(var(--border))] bg-[hsl(var(--secondary)/.35)] p-5 sm:p-6">
                   <div className="flex items-center justify-between">
@@ -1411,7 +1427,7 @@ function GrowthStrategy() {
 function FundUtilization() {
   const reduce = useReducedMotion();
   const chartRef = useRef<HTMLDivElement>(null);
-  const chartInView = useInView(chartRef, { once: true, amount: 0.28 });
+  const chartInView = useInView(chartRef, { once: true, amount: 0.15 });
 
   const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, value }: any) => {
     const R = Math.PI / 180;
@@ -1444,7 +1460,7 @@ function FundUtilization() {
 
         <div className="fund-grid mt-10 grid items-start gap-6 lg:grid-cols-2">
           {/* Donut Chart */}
-          <Reveal delay={0.1}>
+          <Reveal delay={0.08}>
             <div ref={chartRef} className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-5 shadow-sm">
               <div className="h-[240px] sm:h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1460,7 +1476,7 @@ function FundUtilization() {
                       dataKey="value"
                       paddingAngle={2}
                       animationBegin={0}
-                      animationDuration={chartInView && !reduce ? 900 : 0}
+                      animationDuration={chartInView && !reduce ? 700 : 0}
                     >
                       {fundData.map((entry, idx) => (
                         <Cell key={idx} fill={entry.color} />
@@ -1486,10 +1502,10 @@ function FundUtilization() {
 
           {/* Our Ask Breakdown */}
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, x: 20 }}
-            whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.24 }}
-            transition={{ duration: 0.5, delay: 0.18 }}
+            initial={reduce ? undefined : { opacity: 0, y: 14 }}
+            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.12 }}
             className="overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-5 shadow-sm sm:p-7"
           >
             <div className="mb-3.5 flex items-center gap-3">
@@ -1542,10 +1558,10 @@ function Leadership() {
 
         <div className="leadership-grid mt-10 grid items-center gap-8 lg:grid-cols-[34fr_66fr] lg:gap-12">
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, scale: 0.94 }}
+            initial={reduce ? undefined : { opacity: 0, scale: 0.96 }}
             whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.22 }}
-            transition={{ duration: 0.55, delay: 0.1 }}
+            viewport={{ once: true, amount: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.08 }}
             className="leader-avatar flex justify-center"
           >
             <div className="relative">
@@ -1559,10 +1575,10 @@ function Leadership() {
           </motion.div>
 
           <motion.div
-            initial={reduce ? undefined : { opacity: 0, x: 20 }}
-            whileInView={reduce ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.22 }}
-            transition={{ duration: 0.55, delay: 0.18 }}
+            initial={reduce ? undefined : { opacity: 0, y: 14 }}
+            whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.12 }}
             className="relative overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-sm sm:p-8"
           >
             <div className="relative">
@@ -1663,7 +1679,7 @@ function CTASection() {
             <button
               type="button"
               onClick={() => goTo('contact')}
-              className="inline-flex min-h-[48px] min-w-[200px] items-center justify-center gap-2.5 bg-[hsl(var(--accent))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-white shadow-sm transition hover:bg-[hsl(var(--accent)/.88)] active:scale-[.99]"
+              className="inline-flex min-h-[48px] min-w-[200px] items-center justify-center gap-2.5 bg-[hsl(var(--accent))] px-6 py-3.5 text-xs font-semibold uppercase tracking-[.13em] text-white shadow-sm transition-colors hover:bg-[hsl(var(--accent)/.88)] active:scale-[.99]"
               data-testid="button-cta-partner"
             >
               Partner With Us <ArrowRight size={14} />
@@ -1737,7 +1753,7 @@ function Home() {
       <button
         type="button"
         onClick={() => goTo('home')}
-        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.9)] text-[hsl(var(--primary))] shadow-md backdrop-blur-sm transition hover:-translate-y-1 hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))]"
+        className="fixed bottom-5 right-5 z-30 flex h-10 w-10 items-center justify-center border border-[hsl(var(--border))] bg-[hsl(var(--card)/.95)] text-[hsl(var(--primary))] shadow-md backdrop-blur-md transition-colors hover:border-[hsl(var(--accent))] hover:text-[hsl(var(--accent))]"
         aria-label="Back to top"
         data-testid="button-back-top"
       >
